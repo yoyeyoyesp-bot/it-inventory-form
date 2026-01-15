@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บันทึกข้อมูล IT เข้าคลัง</title>
+
+<!-- QR Scanner Library -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: #f4f6fb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+.card {
+    background: #ffffff;
+    padding: 26px;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 18px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+}
+h1 {
+    text-align: center;
+    font-size: 22px;
+    color: #7b6fc5;
+    margin-bottom: 20px;
+}
+label {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 6px;
+    display: block;
+}
+select, input {
+    width: 100%;
+    padding: 11px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+button {
+    width: 100%;
+    padding: 12px;
+    background: #cdb4db;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    cursor: pointer;
+}
+button:hover {
+    background: #b8a2d3;
+}
+.qr-btn {
+    background: #bde0fe;
+    margin-bottom: 14px;
+}
+#reader {
+    width: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    display: none;
+    margin-bottom: 14px;
+}
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #bde0fe;
+    color: #333;
+    padding: 14px 22px;
+    border-radius: 16px;
+    font-size: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s ease;
+}
+.toast.show {
+    opacity: 1;
+    bottom: 50px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<h1>บันทึกข้อมูล IT เข้าคลัง</h1>
+
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+
+<form
+  action="https://docs.google.com/forms/d/e/1FAIpQLSf7BzTMNL2Aqo6hIV-pS7WH-2zOmCunShUsq3bbkYkCWfO02Q/formResponse"
+  method="POST"
+  target="hidden_iframe"
+  onsubmit="handleSubmit()"
+>
+
+<input type="hidden" name="fvv" value="1">
+<input type="hidden" name="draftResponse" value="[]">
+<input type="hidden" name="pageHistory" value="0">
+
+<label>รายชื่ออุปกรณ์</label>
+<select name="entry.972393326" required>
+  <option value="">-- เลือกอุปกรณ์ --</option>
+  <option>PC</option>
+  <option>POS</option>
+  <option>Scanner</option>
+  <option>PDA</option>
+  <option>GOT/Tablet</option>
+  <option>UPS</option>
+</select>
+
+<label>รหัสทรัพย์สิน</label>
+<input id="assetId" type="number" name="entry.763295400" required placeholder="กรอกรหัสทรัพย์สิน">
+
+<button type="button" class="qr-btn" onclick="startScan()">📷 สแกน QR รหัสทรัพย์สิน</button>
+
+<div id="reader"></div>
+
+<label>สภาพเครื่อง</label>
+<select name="entry.1490752415" required>
+  <option value="">-- เลือกสภาพเครื่อง --</option>
+  <option>ใช้งานได้</option>
+  <option>ชำรุด</option>
+</select>
+
+<button type="submit">บันทึกข้อมูล</button>
+</form>
+</div>
+
+<div id="toast" class="toast">✅ บันทึกข้อมูลสำเร็จ</div>
+
+<script>
+let qrScanner;
+
+function startScan() {
+    const reader = document.getElementById("reader");
+    reader.style.display = "block";
+
+    qrScanner = new Html5Qrcode("reader");
+    qrScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        qrCodeMessage => {
+            document.getElementById("assetId").value = qrCodeMessage;
+            qrScanner.stop();
+            reader.style.display = "none";
+        }
+    );
+}
+
+function handleSubmit() {
+  setTimeout(() => {
+    showToast();
+    document.querySelector("form").reset();
+  }, 500);
+}
+
+function showToast() {
+  const toast = document.getElementById("toast");
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 3000);
+}
+</script>
+
+</body>
+</html>
